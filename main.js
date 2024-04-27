@@ -43,3 +43,17 @@ let obj5 = {
 
 let array = [obj1, obj2, obj3, obj4, obj5];
 console.log(customFilterUnique(array, (value) => value.city));
+
+// Task 2: Array Chunking
+function chunkArray(array, chunkSize) {
+    let result = [];
+    let i, j = 0;
+
+    for (i = 0, j = 0; i < array.length; i += chunkSize, ++j)
+        result[j] = array.slice(i, i + chunkSize);
+
+    return result;
+}
+
+let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+console.log(chunkArray(arr, 3));
