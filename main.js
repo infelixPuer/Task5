@@ -55,5 +55,22 @@ function chunkArray(array, chunkSize) {
     return result;
 }
 
-let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-console.log(chunkArray(arr, 3));
+let arrayToBeChunked= [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+console.log(chunkArray(arrayToBeChunked, 3));
+
+// Task 3: Array Shuffling
+function customShuffle(array) {
+    let result = [];
+
+    for (let i = array.length; i > 0; --i) {
+        let randNum = Math.floor(Math.random() * (array.length));
+
+        result.push(array[randNum]);
+        array.splice(randNum, 1);
+    }
+
+    return result;
+}
+
+let arrayToBeShuffled = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+console.log(customShuffle(arrayToBeShuffled));
