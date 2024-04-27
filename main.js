@@ -3,12 +3,15 @@ function customFilterUnique(array, callback) {
     let uniqueSet = new Set();
     let result = [];
 
-    for (let item of array) {
-        let key = callback(item);
+    for (let i = 0; i < array.length; ++i) {
+        let key = callback(array[i]);
 
         if (!uniqueSet.has(key)) {
             uniqueSet.add(key);
-            result.push(item);
+            result.push(array[i]);
+        } else {
+            const index = result.findIndex(item => callback(item) === key);
+            result.splice(index, 1);
         }
     }
 
@@ -41,16 +44,23 @@ let obj5 = {
     city: "Seattle",
 }
 
-let array = [obj1, obj2, obj3, obj4, obj5];
-console.log(customFilterUnique(array, (value) => value.city));
+let arrayToBeFiltered = [obj1, obj2, obj3, obj4, obj5];
+console.log(customFilterUnique(arrayToBeFiltered, (value) => value.city));
 
 // Task 2: Array Chunking
 function chunkArray(array, chunkSize) {
     let result = [];
-    let i, j = 0;
 
-    for (i = 0, j = 0; i < array.length; i += chunkSize, ++j)
-        result[j] = array.slice(i, i + chunkSize);
+    for (let i = 0, j = 0; i < array.length; i += chunkSize, ++j) {
+        for (let k = 0; k < chunkSize; ++k) {
+            result[j] = [];
+            result[j][k] = array[i + k];
+        }
+    }
+
+    // Second variant, less performant
+    // for (let i = 0, j = 0; i < array.length; i += chunkSize, ++j)
+    //     result[j] = array.slice(i, i + chunkSize);
 
     return result;
 }
@@ -128,3 +138,17 @@ function getArrayUnion(array1, array2) {
 
     return result;
 }
+
+// Task 5: Array Performance Analysis
+function measureArrayPerformance(array, func) {
+    console.time(`${func.name}`);
+    func(array);
+    console.timeEnd(`${func.name}`);
+}
+
+let testArray1 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+measureArrayPerformance(testArray1, chunkArray);
+measureArrayPerformance(testArray1, customShuffle);
+measureArrayPerformance(testArray1, arr => { arr.map(value => value * value)})
+measureArrayPerformance(testArray1, arr => { arr.filter(value => value % 2 === 0)})
+measureArrayPerformance(arrayToBeFiltered, arr => { customFilterUnique(arr, value => value.city)})
