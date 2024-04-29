@@ -1,66 +1,78 @@
 // Task 1: Advanced Array Filtering
 function customFilterUnique(array, callback) {
-    let uniqueSet = new Set();
     let result = [];
+    let existsInArray = false;
 
     for (let i = 0; i < array.length; ++i) {
         let key = callback(array[i]);
+        existsInArray = false;
 
-        if (!uniqueSet.has(key)) {
-            uniqueSet.add(key);
+        if (!key) continue;
+
+        if (typeof key === "object") {
+            for (let item of result) {
+                if (compareObjects(item, array[i])) {
+                    existsInArray = true;
+                }
+            }
+
+            if (!existsInArray) {
+                result.push(array[i]);
+            }
+            continue;
+        }
+
+        if (result.indexOf(key) === -1) {
             result.push(array[i]);
-        } else {
-            const index = result.findIndex(item => callback(item) === key);
-            result.splice(index, 1);
         }
     }
 
     return result;
 }
 
-let obj1 = {
-    name: "John",
-    email: "john@example.com",
-    city: "New York",
-}
-let obj2 = {
-    name: "Jane",
-    email: "jane@example.com",
-    city: "Boston",
-}
-let obj3 = {
-    name: "Adam",
-    email: "adam@example.com",
-    city: "Los Angeles",
-}
-let obj4 = {
-    name: "Mike",
-    email: "mike@example.com",
-    city: "Boston",
-}
-let obj5 = {
-    name: "Bob",
-    email: "bob@example.com",
-    city: "Seattle",
+function compareObjects(obj1, obj2) {
+    if (typeof obj1 !== "object" && typeof obj2 !== "object")
+        throw new Error("Pass objects as parameters");
+
+    let keys1 = Object.keys(obj1);
+    let keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) return false;
+
+    for (let key of keys1) {
+        if (typeof obj1[key] === "object" && typeof obj2[key] === "object") {
+            if (!compareObjects(obj1[key], obj2[key])) return false;
+        } else {
+            if (obj1[key] !== obj2[key]) return false;
+        }
+    }
+
+    return true;
 }
 
-let arrayToBeFiltered = [obj1, obj2, obj3, obj4, obj5];
-console.log(customFilterUnique(arrayToBeFiltered, (value) => value.city));
+let arrayOfObjects = [
+    { a: 1, b: 2 },
+    { a: 1, b: 2 },
+    { c: 3, d: 4 },
+    { a: 5, b: 6 },
+    { e: 7, f: 8 },
+    { g: 9, h: 0 }
+];
+const filterByPropertyA = (obj) => {
+    if (!obj || typeof obj !== "object") throw new Error("pass an object as parameter")
+    return Object.keys(obj).includes("a") ? obj : undefined
+}
+console.log(customFilterUnique(arrayOfObjects, filterByPropertyA));
 
 // Task 2: Array Chunking
 function chunkArray(array, chunkSize) {
     let result = [];
+    let index = 0
 
-    for (let i = 0, j = 0; i < array.length; i += chunkSize, ++j) {
-        for (let k = 0; k < chunkSize; ++k) {
-            result[j] = [];
-            result[j][k] = array[i + k];
-        }
+    while (index < array.length) {
+        result.push(array.slice(index, index + chunkSize));
+        index += chunkSize;
     }
-
-    // Second variant, less performant
-    // for (let i = 0, j = 0; i < array.length; i += chunkSize, ++j)
-    //     result[j] = array.slice(i, i + chunkSize);
 
     return result;
 }
@@ -151,4 +163,4 @@ measureArrayPerformance(testArray1, chunkArray);
 measureArrayPerformance(testArray1, customShuffle);
 measureArrayPerformance(testArray1, arr => { arr.map(value => value * value)})
 measureArrayPerformance(testArray1, arr => { arr.filter(value => value % 2 === 0)})
-measureArrayPerformance(arrayToBeFiltered, arr => { customFilterUnique(arr, value => value.city)})
+measureArrayPerformance(arrayOfObjects, arr => { customFilterUnique(arr, obj => filterByPropertyA(obj))})
